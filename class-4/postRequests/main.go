@@ -7,7 +7,7 @@ import (
 )
 
 type RequestFormat struct {
-	UnixTime int64 `json:"time"`
+	UnixTime int64
 }
 
 func main() {
@@ -18,12 +18,17 @@ func main() {
 
 func handleConversion(c *gin.Context) {
 	var request RequestFormat
-	c.BindJSON(&request)
+	err := c.BindJSON(&request)
+
+	if err != nil {
+		c.JSON(400, gin.H{"error": "Invalid request format"})
+		return
+	}
 	// request.Time is time in epoch format
 	requestTime := time.Unix(request.UnixTime, 0)
 	fmt.Println(requestTime)
 	// convert to a user readable format and return
 	humanReadableTime := requestTime.Format("2006-01-02 15:04:05")
 	fmt.Println(humanReadableTime)
-	c.JSON(200, gin.H{"time": humanReadableTime})
+	c.JSON(200, gin.H{"time123": humanReadableTime})
 }
